@@ -1,16 +1,20 @@
-# educonnect
+# EduConnect
 
-A new Flutter project.
+Репозиториум за проектот по предметот Мобилни Информациски Системи
 
-## Getting Started
+EduConnect е иновативна мобилна апликација со фокус на давање поддршка на студентите и
+учениците, како и на оние кои се посветени на предавање и обучување. Нашата апликација се
+одликува со намера да ги поврзе оние кои бараат знаење и поддршка со способни професионалци
+и експерти од различни области.
+За студентите, EduConnect претставува најлесниот начин да пронајдат приватни часови и
+резервираат сесии со квалификувани тутори, што им помага да ги совладаат предизвиците на
+учењето во училиште или на факултет. Со интуитивна и кориснички пријателска навигација,
+студентите можат брзо да најдат тутори кои одговараат на нивните потреби, да прегледаат
+профили на тутори и да ги закажат сесиите што им одговараат.
+За туторите, EduConnect овозможува платформа на која што со брза регистрација може да ги
+претстават нивните квалификации и достапност. Ова значи дека тие можат лесно да се поврзат со
+студенти и ученици кои го бараат нивниот наставен искуство и експертиза.
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Изработено од:
+Андреј Тодоровски 201084
+Ивана Трпеска 201090
