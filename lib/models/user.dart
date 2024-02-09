@@ -1,29 +1,42 @@
-class User {
+class MyUser {
   final String id;
   final String username;
   final String password;
-  final String name;
+  final String firstName;
+  final String lastName;
+  final String phoneNumber;
   final String role; // tutor ili student
 
-  User({required this.id, required this.username, required this.password, required this.name, required this.role});
+  MyUser(
+      {required this.id,
+      required this.username,
+      required this.password,
+      required this.firstName,
+      required this.lastName,
+      required this.role,
+      required this.phoneNumber});
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'username': username,
       'password': password,
-      'name': name,
+      'firstName': firstName,
+      'lastName': lastName,
       'role': role,
+      'phoneNumber': phoneNumber
     };
   }
 
-  static User fromJson(Map<String, dynamic> json) {
-    return User(
+  static MyUser fromJson(Map<String, dynamic> json) {
+    return MyUser(
       id: json['id'],
       username: json['username'],
       password: json['password'],
-      name: json['name'],
+      firstName: json['firstName'],
+      lastName: json['lastName'],
       role: json['role'],
+      phoneNumber: json['phoneNumber'],
     );
   }
 }

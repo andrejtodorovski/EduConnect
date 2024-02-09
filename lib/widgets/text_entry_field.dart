@@ -1,9 +1,10 @@
+import 'package:educonnect/helpers/colors.dart';
 import 'package:flutter/material.dart';
 
 Widget entryFieldWidget(String title, TextEditingController controller,
     {bool isPassword = false}) {
   return Container(
-    margin: const EdgeInsets.symmetric(vertical: 10),
+    margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -11,12 +12,13 @@ Widget entryFieldWidget(String title, TextEditingController controller,
           controller: controller,
           obscureText: isPassword,
           decoration: InputDecoration(
-            border: InputBorder.none,
-            fillColor: const Color(0xfff3f3f4),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(25)),
+            fillColor: Colors.white,
             filled: true,
             label: Text(title,
                 style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                    const TextStyle(fontSize: 15, color: green)),
           ),
         )
       ],

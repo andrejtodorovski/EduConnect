@@ -1,28 +1,29 @@
+import 'package:educonnect/helpers/colors.dart';
 import 'package:educonnect/screens/register_screen.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 Widget registerLinkWidget(BuildContext context) {
-  return RichText(
-    text: TextSpan(
-      children: <TextSpan>[
-        const TextSpan(
-            text: "Немате сметка? ", style: TextStyle(color: Colors.black)),
-        TextSpan(
-          text: 'Регистрирајте се тука.',
-          style: const TextStyle(
+  return Column(
+    children: [
+      const Text(
+        "Немате корисничка сметка?",
+        style: TextStyle(color: green),
+      ),
+      TextButton(
+        onPressed: () {
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const RegisterScreen()));
+        },
+        child: const Text(
+          'Регистрирајте се тука.',
+          style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: Colors.blue,
+              color: green,
               decoration: TextDecoration.none),
-          recognizer: TapGestureRecognizer()
-            ..onTap = () {
-              Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const RegisterScreen()));
-            },
         ),
-      ],
-    ),
+      ),
+    ],
   );
 }

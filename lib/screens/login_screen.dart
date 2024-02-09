@@ -1,3 +1,5 @@
+import 'package:educonnect/helpers/colors.dart';
+import 'package:educonnect/helpers/images.dart';
 import 'package:educonnect/screens/home_screen.dart';
 import 'package:educonnect/services/auth_service.dart';
 import 'package:educonnect/widgets/error_message.dart';
@@ -49,20 +51,15 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Widget _title() => const Text('Најавете се');
-
   Widget _submitButton() {
     return ElevatedButton(
         onPressed: signIn,
-        child: const Text('Најави се', style: TextStyle(fontSize: 20)));
+        child: const Text('Најави се', style: TextStyle(fontSize: 20, color: green)));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: _title(),
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Center(
@@ -70,12 +67,15 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              entryFieldWidget('Е-маил', _emailController),
+              const SizedBox(height: 80),
+              logogreen,
+              const SizedBox(height: 60),
+              entryFieldWidget('Корисничко име', _emailController),
               entryFieldWidget('Лозинка', _passwordController,
                   isPassword: true),
               errorMessageWidget(errorMessage),
               _submitButton(),
-              const SizedBox(height: 20),
+              const SizedBox(height: 30),
               registerLinkWidget(context),
             ],
           ),

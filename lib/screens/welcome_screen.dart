@@ -61,7 +61,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       Navigator.pushReplacement(context,
                           MaterialPageRoute(builder: (context) => const HomeScreen()));
                     },
-                    child: const Text("Прескокни"))
+                    child: const Text("Продолжи како гостин"))
               ],
             )));
   }
