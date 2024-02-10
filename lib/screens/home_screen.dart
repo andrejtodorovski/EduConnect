@@ -16,6 +16,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../services/auth_service.dart';
+import '../widgets/course_info.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String id = "homePage";
@@ -47,6 +48,11 @@ class _HomeScreenState extends State<HomeScreen> {
             builder: (context) => CoursesScreen(
                   keyword: _keywordController.text,
                 )));
+  }
+
+  void _showCourseInfo(BuildContext context, Course course) {
+    showModalBottomSheet(context: context, builder: (context) =>
+        CourseInfoWidget(course: course,));
   }
 
   Widget _searchIcon() {
@@ -146,8 +152,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: const EdgeInsets.all(15.0),
-                            child: rectangleCourse(courses[index].averageRating,
-                                courses[index].name, courses[index].tutorName),
+                            child: GestureDetector(
+                              onTap: () => _showCourseInfo(context, courses[index]),
+                              child: rectangleCourse(courses[index].averageRating,
+                                  courses[index].name, courses[index].tutorName),
+                            ),
                           );
                         }),
                 );
@@ -233,7 +242,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           MaterialPageRoute(
                               builder: (context) => const AddCourseScreen()));
                     },
-                    child: const Text("Додади курс")),
+                    child: const Text("Add")),
                 ElevatedButton(onPressed: () {
                   _authService.signOut();
                   Navigator.pushReplacement(context,

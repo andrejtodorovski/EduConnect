@@ -4,6 +4,7 @@ class Review {
   final String comment;
   final String courseId;
   final String userId;
+  final String userName;
   final DateTime timestamp;
 
   Review({
@@ -12,6 +13,7 @@ class Review {
     required this.comment,
     required this.courseId,
     required this.userId,
+    required this.userName,
     required this.timestamp,
   });
 
@@ -22,17 +24,19 @@ class Review {
       'comment': comment,
       'courseId': courseId,
       'userId': userId,
+      'userName': userName,
       'timestamp': timestamp,
     };
   }
 
-  static Review fromJson(Map<String, dynamic> json) {
+  static Review fromJson(String _id, Map<String, dynamic> json) {
     return Review(
-      id: json['id'],
+      id: _id,
       rating: json['rating'],
       comment: json['comment'],
       courseId: json['courseId'],
       userId: json['userId'],
+      userName: json['userName'],
       timestamp: (json['timestamp']).toDate(),
     );
   }
