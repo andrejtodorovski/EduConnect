@@ -1,11 +1,11 @@
 import 'package:educonnect/helpers/colors.dart';
 import 'package:flutter/material.dart';
 
-Widget rectangleCourse(double rating, String courseName, String authorName) {
+Widget rectangleCourse(double rating, String courseName, String authorName,
+    bool showFavoritesButton) {
   return Container(
     padding: const EdgeInsets.all(8),
     width: 250,
-    height: 40,
     decoration: BoxDecoration(
       color: grey,
       borderRadius: BorderRadius.circular(8),
@@ -54,12 +54,14 @@ Widget rectangleCourse(double rating, String courseName, String authorName) {
             ],
           ),
         ),
-        IconButton(
-          icon: const Icon(Icons.bookmark_border),
-          onPressed: () {
-            // Bookmark action
-          },
-        ),
+        if (showFavoritesButton) ...[
+          IconButton(
+            icon: const Icon(Icons.bookmark_border),
+            onPressed: () {
+              // Bookmark action
+            },
+          ),
+        ],
       ],
     ),
   );

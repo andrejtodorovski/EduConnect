@@ -9,7 +9,7 @@ class SavedCoursesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Saved Courses'),
+        title: const Text('Омилени курсеви'),
       ),
       body: const Center(
         child: Text('Your saved courses will be displayed here'),

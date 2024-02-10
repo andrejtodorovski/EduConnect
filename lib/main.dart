@@ -1,3 +1,4 @@
+import 'package:educonnect/helpers/colors.dart';
 import 'package:educonnect/helpers/firebase_options.dart';
 import 'package:educonnect/screens/add_course.dart';
 import 'package:educonnect/screens/courses_screen.dart';
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         title: 'EduConnect',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          colorScheme: ColorScheme.fromSeed(seedColor: green),
           useMaterial3: true,
         ),
         initialRoute: SplashScreen.id,

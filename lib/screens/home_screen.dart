@@ -155,7 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: GestureDetector(
                               onTap: () => _showCourseInfo(context, courses[index]),
                               child: rectangleCourse(courses[index].averageRating,
-                                  courses[index].name, courses[index].tutorName),
+                                  courses[index].name, courses[index].tutorName, true),
                             ),
                           );
                         }),
@@ -212,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     icon: const Icon(Icons.book)),
                 IconButton(
                     onPressed: () {
-                      Navigator.pushReplacement(
+                      Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
@@ -221,7 +221,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     icon: const Icon(Icons.favorite)),
                 IconButton(
                     onPressed: () {
-                      Navigator.pushReplacement(
+                      Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => const MessagesScreen()));
@@ -229,7 +229,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     icon: const Icon(Icons.message)),
                 IconButton(
                     onPressed: () {
-                      Navigator.pushReplacement(
+                      Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => const MyProfileScreen()));
@@ -237,7 +237,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     icon: const Icon(Icons.person)),
                 ElevatedButton(
                     onPressed: () {
-                      Navigator.pushReplacement(
+                      Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => const AddCourseScreen()));
@@ -252,7 +252,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: green),
                   onPressed: () {
-                    Navigator.pushReplacement(
+                    Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => const LoginScreen()));

@@ -13,7 +13,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Messages'),
+        title: const Text('Пораки'),
       ),
       body: const Center(
         child: Text('Your messages will be displayed here'),

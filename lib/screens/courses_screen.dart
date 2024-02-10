@@ -1,5 +1,4 @@
 import 'package:educonnect/services/course_service.dart';
-import 'package:educonnect/services/tutors_service.dart';
 import 'package:flutter/material.dart';
 
 import '../models/course.dart';
@@ -20,7 +19,6 @@ class CoursesScreen extends StatefulWidget {
 class _CoursesScreenState extends State<CoursesScreen> {
   late Stream<List<Course>> coursesStream;
   late List<MyUser> allTutors;
-  final TutorsService _tutorsService = TutorsService();
   @override
   void initState() {
     super.initState();
@@ -31,7 +29,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Courses'),
+        title: const Text('Курсеви'),
       ),
       body: StreamBuilder<List<Course>>(
         stream: coursesStream,
