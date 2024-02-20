@@ -20,22 +20,30 @@ import '../widgets/course_info.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String id = "homePage";
+  final Stream<List<String>>? favoriteCourses;
 
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({this.favoriteCourses, Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
+
+// TODO() - check favorites everywhere and reviews everywhere
 
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _keywordController = TextEditingController();
   final TutorsService _tutorsService = TutorsService();
   final CourseService _courseService = CourseService();
   final AuthService _authService = AuthService();
+  final favoriteCoursesIds = <String>[];
 
   @override
   void initState() {
     super.initState();
+    widget.favoriteCourses?.listen((event) {
+      favoriteCoursesIds.clear();
+      favoriteCoursesIds.addAll(event);
+    });
   }
 
   void searchCourses() async {
@@ -51,8 +59,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showCourseInfo(BuildContext context, Course course) {
-    showModalBottomSheet(context: context, builder: (context) =>
-        CourseInfoWidget(course: course,));
+    showModalBottomSheet(
+        context: context,
+        builder: (context) => CourseInfoWidget(
+              course: course,
+            ));
   }
 
   Widget _searchIcon() {
@@ -146,19 +157,20 @@ class _HomeScreenState extends State<HomeScreen> {
               if (snapshot.hasData) {
                 final courses = snapshot.data!;
                 return Expanded(
-                    child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: courses.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(15.0),
-                            child: GestureDetector(
-                              onTap: () => _showCourseInfo(context, courses[index]),
-                              child: rectangleCourse(courses[index].averageRating,
-                                  courses[index].name, courses[index].tutorName, true),
-                            ),
-                          );
-                        }),
+                  child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: courses.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(15.0),
+                          child: GestureDetector(
+                            onTap: () =>
+                                _showCourseInfo(context, courses[index]),
+                            child: rectangleCourse(courses[index], true,
+                                favoriteCoursesIds.contains(courses[index].id)),
+                          ),
+                        );
+                      }),
                 );
               } else if (snapshot.hasError) {
                 return const Text('Something went wrong');
@@ -243,11 +255,16 @@ class _HomeScreenState extends State<HomeScreen> {
                               builder: (context) => const AddCourseScreen()));
                     },
                     child: const Text("Add")),
-                ElevatedButton(onPressed: () {
-                  _authService.signOut();
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => const HomeScreen()));
-                }, child: const Text("Logout"))
+                ElevatedButton(
+                    onPressed: () {
+                      _authService.signOut();
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const HomeScreen()),
+                      );
+                    },
+                    child: const Text("Logout"))
               ] else ...[
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: green),
@@ -257,7 +274,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         MaterialPageRoute(
                             builder: (context) => const LoginScreen()));
                   },
-                  child: const Text("Најави се", style: TextStyle(color: Colors.white, fontSize: 20)),
+                  child: const Text("Најави се",
+                      style: TextStyle(color: Colors.white, fontSize: 20)),
                 ),
               ]
             ],

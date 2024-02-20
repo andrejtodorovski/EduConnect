@@ -46,9 +46,9 @@ class Course {
     };
   }
 
-  static Course fromJson(String _id, Map<String, dynamic> json) {
+  static Course fromJson(String id, Map<String, dynamic> json) {
     return Course(
-      id: _id,
+      id: id,
       userId: json['userId'],
       tutorName: json['tutorName'],
       name: json['name'],

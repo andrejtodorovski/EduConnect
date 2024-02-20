@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:educonnect/models/course.dart';
+import 'package:educonnect/models/user_favorite_courses.dart';
 
 class CourseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -58,5 +59,48 @@ class CourseService {
           .map((doc) => Course.fromJson(doc.id, doc.data()))
           .toList();
     });
+  }
+
+  Stream<List<String>> getFavoriteCoursesStream(String userId) {
+    return _firestore
+        .collection('user_favorite_courses')
+        .where('userId', isEqualTo: userId)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) => doc['courseId'].toString()).toList();
+    });
+  }
+
+  Future<void> createUserFavoriteCourse(String courseId, String userId) async {
+    final List<UserFavoriteCourses> currentUserFavoriteCourses =
+        await _firestore
+            .collection('user_favorite_courses')
+            .where('courseId', isEqualTo: courseId)
+            .where('userId', isEqualTo: userId)
+            .get()
+            .then((snapshot) {
+      return snapshot.docs
+          .map((doc) => UserFavoriteCourses.fromJson(doc.id, doc.data()))
+          .toList();
+    });
+    if (currentUserFavoriteCourses.isEmpty) {
+      final UserFavoriteCourses userFavoriteCourses = UserFavoriteCourses(
+        id: '',
+        courseId: courseId,
+        userId: userId,
+      );
+      Map<String, dynamic> userFavoriteCoursesData =
+          userFavoriteCourses.toJson();
+      userFavoriteCoursesData.remove('id');
+      await _firestore
+          .collection('user_favorite_courses')
+          .add(userFavoriteCoursesData)
+          .then((docRef) {});
+    } else {
+      await _firestore
+          .collection('user_favorite_courses')
+          .doc(currentUserFavoriteCourses[0].id)
+          .delete();
+    }
   }
 }

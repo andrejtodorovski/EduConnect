@@ -29,9 +29,9 @@ class Review {
     };
   }
 
-  static Review fromJson(String _id, Map<String, dynamic> json) {
+  static Review fromJson(String id, Map<String, dynamic> json) {
     return Review(
-      id: _id,
+      id: id,
       rating: json['rating'],
       comment: json['comment'],
       courseId: json['courseId'],

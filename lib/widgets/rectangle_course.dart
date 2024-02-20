@@ -1,8 +1,12 @@
 import 'package:educonnect/helpers/colors.dart';
+import 'package:educonnect/services/auth_service.dart';
+import 'package:educonnect/services/course_service.dart';
 import 'package:flutter/material.dart';
 
-Widget rectangleCourse(double rating, String courseName, String authorName,
-    bool showFavoritesButton) {
+import '../models/course.dart';
+
+Widget rectangleCourse(
+    Course course, bool showFavoritesButton, bool isUserFavoriteCourse) {
   return Container(
     padding: const EdgeInsets.all(8),
     width: 250,
@@ -30,7 +34,7 @@ Widget rectangleCourse(double rating, String courseName, String authorName,
                   const Icon(Icons.star, color: green, size: 16),
                   const SizedBox(width: 4),
                   Text(
-                    rating.toString(),
+                    course.averageRating.toString(),
                     style: const TextStyle(
                       color: green,
                       fontWeight: FontWeight.bold,
@@ -40,13 +44,13 @@ Widget rectangleCourse(double rating, String courseName, String authorName,
               ),
               const SizedBox(height: 8),
               Text(
-                courseName,
+                course.name,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
               ),
               Text(
-                authorName,
+                course.tutorName,
                 style: const TextStyle(
                   color: Colors.black,
                 ),
@@ -55,14 +59,56 @@ Widget rectangleCourse(double rating, String courseName, String authorName,
           ),
         ),
         if (showFavoritesButton) ...[
-          IconButton(
-            icon: const Icon(Icons.bookmark_border),
-            onPressed: () {
-              // Bookmark action
-            },
+          FavoriteCourseIconButton(
+            courseId: course.id,
+            initialState: isUserFavoriteCourse,
           ),
         ],
       ],
     ),
   );
+}
+
+class FavoriteCourseIconButton extends StatefulWidget {
+  final String courseId;
+  final bool initialState;
+
+  const FavoriteCourseIconButton(
+      {Key? key, required this.courseId, required this.initialState})
+      : super(key: key);
+
+  @override
+  State<FavoriteCourseIconButton> createState() =>
+      _FavoriteCourseIconButtonState();
+}
+
+class _FavoriteCourseIconButtonState extends State<FavoriteCourseIconButton> {
+  late bool isFavorite;
+
+  @override
+  void initState() {
+    super.initState();
+    isFavorite = widget.initialState;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // The icon changes based on the isFavorite flag
+    IconData iconData = isFavorite ? Icons.bookmark : Icons.bookmark_border;
+
+    return IconButton(
+      icon: Icon(iconData),
+      onPressed: () async {
+        // Ideally, handle potential errors and ensure createUserFavoriteCourse
+        // can indicate success/failure or use a state management solution
+        await CourseService().createUserFavoriteCourse(
+            widget.courseId, AuthService().currentUser!.uid);
+
+        // Toggle the favorite state
+        setState(() {
+          isFavorite = !isFavorite;
+        });
+      },
+    );
+  }
 }

@@ -2,6 +2,7 @@ import 'package:educonnect/helpers/colors.dart';
 import 'package:educonnect/helpers/images.dart';
 import 'package:educonnect/screens/home_screen.dart';
 import 'package:educonnect/services/auth_service.dart';
+import 'package:educonnect/services/course_service.dart';
 import 'package:educonnect/widgets/error_message.dart';
 import 'package:educonnect/widgets/register_link.dart';
 import 'package:educonnect/widgets/text_entry_field.dart';
@@ -36,13 +37,21 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     try {
-      await AuthService()
-          .signInWithEmailAndPassword(
-              _emailController.text, _passwordController.text)
-          .then((value) => {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()))
-              });
+      final value = await AuthService().signInWithEmailAndPassword(
+          _emailController.text, _passwordController.text);
+      if (value != null) {
+        var favoriteCourses =
+            CourseService().getFavoriteCoursesStream(value.user!.uid);
+
+        if (!mounted) return;
+
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => HomeScreen(
+                      favoriteCourses: favoriteCourses,
+                    )));
+      }
     } on FirebaseAuthException catch (e) {
       hasError = true;
       setState(() {
@@ -54,7 +63,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _submitButton() {
     return ElevatedButton(
         onPressed: signIn,
-        child: const Text('Најави се', style: TextStyle(fontSize: 20, color: green)));
+        child: const Text('Најави се',
+            style: TextStyle(fontSize: 20, color: green)));
   }
 
   @override
