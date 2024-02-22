@@ -6,6 +6,7 @@ class MyUser {
   final String lastName;
   final String phoneNumber;
   final String role; // tutor ili student
+  final String imageUrl;
 
   MyUser(
       {required this.id,
@@ -14,7 +15,8 @@ class MyUser {
       required this.firstName,
       required this.lastName,
       required this.role,
-      required this.phoneNumber});
+      required this.phoneNumber,
+      this.imageUrl = 'No image'});
 
   Map<String, dynamic> toJson() {
     return {
@@ -24,7 +26,8 @@ class MyUser {
       'firstName': firstName,
       'lastName': lastName,
       'role': role,
-      'phoneNumber': phoneNumber
+      'phoneNumber': phoneNumber,
+      'imageUrl': imageUrl,
     };
   }
 
@@ -37,6 +40,7 @@ class MyUser {
       lastName: json['lastName'],
       role: json['role'],
       phoneNumber: json['phoneNumber'],
+      imageUrl: json['imageUrl'] ?? 'No image'
     );
   }
 }

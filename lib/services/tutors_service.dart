@@ -64,15 +64,5 @@ class TutorsService {
     }
 
     return topRatedUsers;
-
-
-    // return _firestore
-    //     .collection('users')
-    //     // .orderBy('averageRating', descending: true)
-    //     .limit(4)
-    //     .snapshots()
-    //     .map((snapshot) {
-    //   return snapshot.docs.map((doc) => MyUser.fromJson(doc.data())).toList();
-    // });
   }
 }

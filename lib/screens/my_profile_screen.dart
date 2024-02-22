@@ -1,10 +1,14 @@
+import 'dart:typed_data';
+
 import 'package:educonnect/models/course.dart'; // Ensure you have this model
 import 'package:educonnect/services/auth_service.dart'; // Adjust based on your implementation
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../helpers/colors.dart';
 import '../models/user.dart';
 import '../services/course_service.dart';
+import '../services/image_service.dart';
 import '../widgets/my_courses_view.dart';
 import 'add_course.dart';
 
@@ -20,6 +24,7 @@ class MyProfileScreen extends StatefulWidget {
 class _MyProfileScreenState extends State<MyProfileScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  Uint8List? _image;
 
   Future<MyUser> getUserData() async {
     return await AuthService().getCurrentUser();
@@ -37,6 +42,14 @@ class _MyProfileScreenState extends State<MyProfileScreen>
     super.dispose();
   }
 
+  void selectImage() async {
+    Uint8List tmp = await pickImage(ImageSource.gallery);
+    setState(() {
+      _image = tmp;
+    });
+    saveImage(AuthService().currentUser!.uid, _image!);
+  }
+
   Widget _socialMediaButton(IconData icon) {
     return IconButton(
       icon: Icon(icon),
@@ -50,61 +63,80 @@ class _MyProfileScreenState extends State<MyProfileScreen>
       appBar: AppBar(
         title: const Text('Мој профил'),
       ),
-      body: SingleChildScrollView(
-        child: FutureBuilder<MyUser>(
-          future: getUserData(), // the Future function
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (snapshot.hasData) {
-              // Data is loaded, access it using snapshot.data
-              MyUser currentUser = snapshot.data!;
-              return Column(
-                children: <Widget>[
-                  const SizedBox(height: 20),
-                  const CircleAvatar(
-                      radius: 50.0,
-                      backgroundColor: Colors.white,
-                      child: Icon(
-                        Icons.person,
-                        color: green,
-                        size: 90.0,
-                      )),
-                  const SizedBox(height: 10),
-                  Text(currentUser.username,
-                      style: const TextStyle(fontSize: 20)),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _socialMediaButton(Icons.facebook),
-                      _socialMediaButton(Icons.email),
-                    ],
+      body: FutureBuilder<MyUser>(
+        future: getUserData(), // the Future function
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasData) {
+            // Data is loaded, access it using snapshot.data
+            MyUser currentUser = snapshot.data!;
+            return Column(
+              children: <Widget>[
+                const SizedBox(height: 20),
+                Stack(children: [
+                  _image != null
+                      ? CircleAvatar(
+                          radius: 50.0,
+                          backgroundColor: Colors.white,
+                          backgroundImage: MemoryImage(_image!),
+                        )
+                      : currentUser.imageUrl != "No image"
+                      ? CircleAvatar(
+                              radius: 50.0,
+                              backgroundColor: Colors.white,
+                              backgroundImage: NetworkImage(currentUser.imageUrl),
+                            )
+                          : const CircleAvatar(
+                              radius: 50.0,
+                              backgroundColor: Colors.white,
+                              child: Icon(
+                                Icons.person,
+                                color: green,
+                                size: 90.0,
+                              )),
+                  Positioned(
+                    bottom: -10,
+                    left: 65,
+                    child: IconButton(
+                        icon: const Icon(Icons.add_a_photo),
+                        onPressed: selectImage),
                   ),
-                  TabBar(
+                ]),
+                const SizedBox(height: 10),
+                Text(currentUser.username,
+                    style: const TextStyle(fontSize: 20)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _socialMediaButton(Icons.facebook),
+                    _socialMediaButton(Icons.email),
+                  ],
+                ),
+                TabBar(
+                  controller: _tabController,
+                  tabs: const [
+                    Tab(text: 'Basic Info'),
+                    Tab(text: "My Courses"),
+                  ],
+                ),
+                Expanded(
+                  child: TabBarView(
                     controller: _tabController,
-                    tabs: const [
-                      Tab(text: 'Basic Info'),
-                      Tab(text: "My Courses"),
+                    children: [
+                      _buildBasicInfoTab(currentUser),
+                      _buildMyCoursesTab(currentUser),
                     ],
                   ),
-                  Expanded(
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: [
-                        _buildBasicInfoTab(currentUser),
-                        _buildMyCoursesTab(currentUser),
-                      ],
-                    ),
-                  ),
-                ],
-              );
-            } else {
-              return const Center(child: Text('No data found'));
-            }
-          },
-        ),
+                ),
+              ],
+            );
+          } else {
+            return const Center(child: Text('No data found'));
+          }
+        },
       ),
     );
   }
