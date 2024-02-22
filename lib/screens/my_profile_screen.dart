@@ -50,59 +50,61 @@ class _MyProfileScreenState extends State<MyProfileScreen>
       appBar: AppBar(
         title: const Text('Мој профил'),
       ),
-      body: FutureBuilder<MyUser>(
-        future: getUserData(), // the Future function
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (snapshot.hasData) {
-            // Data is loaded, access it using snapshot.data
-            MyUser currentUser = snapshot.data!;
-            return Column(
-              children: <Widget>[
-                const SizedBox(height: 20),
-                const CircleAvatar(
-                    radius: 50.0,
-                    backgroundColor: Colors.white,
-                    child: Icon(
-                      Icons.person,
-                      color: green,
-                      size: 90.0,
-                    )),
-                const SizedBox(height: 10),
-                Text(currentUser.username,
-                    style: const TextStyle(fontSize: 20)),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _socialMediaButton(Icons.facebook),
-                    _socialMediaButton(Icons.email),
-                  ],
-                ),
-                TabBar(
-                  controller: _tabController,
-                  tabs: const [
-                    Tab(text: 'Basic Info'),
-                    Tab(text: "My Courses"),
-                  ],
-                ),
-                Expanded(
-                  child: TabBarView(
-                    controller: _tabController,
+      body: SingleChildScrollView(
+        child: FutureBuilder<MyUser>(
+          future: getUserData(), // the Future function
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (snapshot.hasData) {
+              // Data is loaded, access it using snapshot.data
+              MyUser currentUser = snapshot.data!;
+              return Column(
+                children: <Widget>[
+                  const SizedBox(height: 20),
+                  const CircleAvatar(
+                      radius: 50.0,
+                      backgroundColor: Colors.white,
+                      child: Icon(
+                        Icons.person,
+                        color: green,
+                        size: 90.0,
+                      )),
+                  const SizedBox(height: 10),
+                  Text(currentUser.username,
+                      style: const TextStyle(fontSize: 20)),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      _buildBasicInfoTab(currentUser),
-                      _buildMyCoursesTab(currentUser),
+                      _socialMediaButton(Icons.facebook),
+                      _socialMediaButton(Icons.email),
                     ],
                   ),
-                ),
-              ],
-            );
-          } else {
-            return const Center(child: Text('No data found'));
-          }
-        },
+                  TabBar(
+                    controller: _tabController,
+                    tabs: const [
+                      Tab(text: 'Basic Info'),
+                      Tab(text: "My Courses"),
+                    ],
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        _buildBasicInfoTab(currentUser),
+                        _buildMyCoursesTab(currentUser),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            } else {
+              return const Center(child: Text('No data found'));
+            }
+          },
+        ),
       ),
     );
   }

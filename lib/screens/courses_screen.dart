@@ -31,34 +31,36 @@ class _CoursesScreenState extends State<CoursesScreen> {
       appBar: AppBar(
         title: const Text('Курсеви'),
       ),
-      body: StreamBuilder<List<Course>>(
-        stream: coursesStream,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No courses found'));
-          }
-
-          var courses = snapshot.data!;
-          return GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: (1 / 0.75),
-            ),
-            itemCount: courses.length,
-            itemBuilder: (context, index) {
-              return CourseCard(
-                name: courses[index].name,
-                schoolName: courses[index].schoolName,
-                tutorName: courses[index].tutorName,
-                averageRating: courses[index].averageRating,
-              );
-            },
-          );
-        },
+      body: SingleChildScrollView(
+        child: StreamBuilder<List<Course>>(
+          stream: coursesStream,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+        
+            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(child: Text('No courses found'));
+            }
+        
+            var courses = snapshot.data!;
+            return GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: (1 / 0.75),
+              ),
+              itemCount: courses.length,
+              itemBuilder: (context, index) {
+                return CourseCard(
+                  name: courses[index].name,
+                  schoolName: courses[index].schoolName,
+                  tutorName: courses[index].tutorName,
+                  averageRating: courses[index].averageRating,
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }

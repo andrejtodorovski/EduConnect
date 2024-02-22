@@ -101,8 +101,8 @@ class _CourseInfoWidgetState extends State<CourseInfoWidget> {
                   // TODO: Insert what happens when you press the contact button
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.green, // Set the button background color
-                  onPrimary: Colors.white, // Set the button text color
+                  backgroundColor: Colors.green, // Set the button background color
+                  foregroundColor: Colors.white, // Set the button text color
                 ),
                 child: const Text('Контактирај го туторот'),
               ),

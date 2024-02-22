@@ -72,6 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
         icon: const Icon(Icons.search, color: Colors.white));
   }
 
+  // TODO() - use SingleChildScrollView
   @override
   Widget build(BuildContext context) {
     var isSignedIn = FirebaseAuth.instance.currentUser != null;
@@ -110,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 levelOfEducation: "Основно",
                               )));
                 },
-                child: circleWithTextBelowWidget("Основно"),
+                child: circleWithTextBelowWidget("Основно", showPersonIcon: false),
               ),
               GestureDetector(
                 onTap: () {
@@ -121,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 levelOfEducation: "Средно",
                               )));
                 },
-                child: circleWithTextBelowWidget("Средно"),
+                child: circleWithTextBelowWidget("Средно", showPersonIcon: false),
               ),
               GestureDetector(
                 onTap: () {
@@ -132,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 levelOfEducation: "Високо",
                               )));
                 },
-                child: circleWithTextBelowWidget("Високо"),
+                child: circleWithTextBelowWidget("Високо", showPersonIcon: false),
               ),
               GestureDetector(
                 onTap: () {
@@ -143,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 levelOfEducation: "Друго",
                               )));
                 },
-                child: circleWithTextBelowWidget("Друго"),
+                child: circleWithTextBelowWidget("Друго", showPersonIcon: false),
               )
             ],
           ),
@@ -194,7 +195,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         .map((user) => GestureDetector(
                               onTap: () {},
                               child: circleWithTextBelowWidget(user.firstName,
-                                  shouldShowImage: true),
+                                  showPersonIcon: true),
                             ))
                         .toList(),
                   );
@@ -222,6 +223,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               builder: (context) => const CoursesScreen()));
                     },
                     icon: const Icon(Icons.book)),
+                if(isSignedIn) ...[
                 IconButton(
                     onPressed: () {
                       Navigator.push(
@@ -230,7 +232,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               builder: (context) =>
                                   const SavedCoursesScreen()));
                     },
-                    icon: const Icon(Icons.favorite)),
+                    icon: const Icon(Icons.favorite))],
                 IconButton(
                     onPressed: () {
                       Navigator.push(
