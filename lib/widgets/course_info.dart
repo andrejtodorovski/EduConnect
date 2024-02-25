@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../models/course.dart';
 import '../models/review.dart';
 import '../models/user.dart';
+import '../screens/my_profile_screen.dart';
 import '../services/auth_service.dart';
 
 class CourseInfoWidget extends StatefulWidget {
@@ -98,7 +99,13 @@ class _CourseInfoWidgetState extends State<CourseInfoWidget> {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  // TODO: Insert what happens when you press the contact button
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          MyProfileScreen(userId: widget.course.userId),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green, // Set the button background color

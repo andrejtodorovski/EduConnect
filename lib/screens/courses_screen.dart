@@ -3,14 +3,16 @@ import 'package:flutter/material.dart';
 
 import '../models/course.dart';
 import '../models/user.dart';
+import '../services/auth_service.dart';
 import '../widgets/course_card.dart';
 
 class CoursesScreen extends StatefulWidget {
   static const String id = "coursesScreen";
   final String? keyword;
   final String? levelOfEducation;
+  final bool? getOnlyUserSavedCourses;
 
-  const CoursesScreen({Key? key, this.keyword, this.levelOfEducation}) : super(key: key);
+  const CoursesScreen({Key? key, this.keyword, this.levelOfEducation, this.getOnlyUserSavedCourses}) : super(key: key);
 
   @override
   State<CoursesScreen> createState() => _CoursesScreenState();
@@ -22,7 +24,14 @@ class _CoursesScreenState extends State<CoursesScreen> {
   @override
   void initState() {
     super.initState();
-    coursesStream = CourseService().getCoursesStream(widget.keyword, widget.levelOfEducation);
+    if (widget.getOnlyUserSavedCourses != null &&
+        widget.getOnlyUserSavedCourses == true) {
+      coursesStream = CourseService()
+          .getUsersFavoriteCourses(AuthService().currentUser!.uid);
+    } else {
+      coursesStream = CourseService()
+          .getCoursesStream(widget.keyword, widget.levelOfEducation);
+    }
   }
 
   @override
@@ -31,8 +40,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
       appBar: AppBar(
         title: const Text('Курсеви'),
       ),
-      body: SingleChildScrollView(
-        child: StreamBuilder<List<Course>>(
+      body: StreamBuilder<List<Course>>(
           stream: coursesStream,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -61,7 +69,6 @@ class _CoursesScreenState extends State<CoursesScreen> {
             );
           },
         ),
-      ),
     );
   }
 }

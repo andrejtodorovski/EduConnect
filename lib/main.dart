@@ -7,7 +7,6 @@ import 'package:educonnect/screens/login_screen.dart';
 import 'package:educonnect/screens/messages_screen.dart';
 import 'package:educonnect/screens/my_profile_screen.dart';
 import 'package:educonnect/screens/register_screen.dart';
-import 'package:educonnect/screens/saved_courses_screen.dart';
 import 'package:educonnect/screens/splash_screen.dart';
 import 'package:educonnect/screens/welcome_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -41,7 +40,6 @@ class MyApp extends StatelessWidget {
           WelcomeScreen.id: (context) => const WelcomeScreen(),
           AddCourseScreen.id: (context) => const AddCourseScreen(),
           CoursesScreen.id: (context) => const CoursesScreen(),
-          SavedCoursesScreen.id: (context) => const SavedCoursesScreen(),
           MessagesScreen.id: (context) => const MessagesScreen(),
           MyProfileScreen.id: (context) => const MyProfileScreen(),
         });

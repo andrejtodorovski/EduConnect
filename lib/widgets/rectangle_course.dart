@@ -93,18 +93,14 @@ class _FavoriteCourseIconButtonState extends State<FavoriteCourseIconButton> {
 
   @override
   Widget build(BuildContext context) {
-    // The icon changes based on the isFavorite flag
     IconData iconData = isFavorite ? Icons.bookmark : Icons.bookmark_border;
 
     return IconButton(
       icon: Icon(iconData),
       onPressed: () async {
-        // Ideally, handle potential errors and ensure createUserFavoriteCourse
-        // can indicate success/failure or use a state management solution
         await CourseService().createUserFavoriteCourse(
             widget.courseId, AuthService().currentUser!.uid);
 
-        // Toggle the favorite state
         setState(() {
           isFavorite = !isFavorite;
         });

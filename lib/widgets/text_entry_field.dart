@@ -16,9 +16,8 @@ Widget entryFieldWidget(String title, TextEditingController controller,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(25)),
             fillColor: Colors.white,
             filled: true,
-            label: Text(title,
-                style:
-                    const TextStyle(fontSize: 15, color: green)),
+            label:
+                Text(title, style: const TextStyle(fontSize: 15, color: green)),
           ),
         )
       ],

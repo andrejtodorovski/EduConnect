@@ -1,7 +1,9 @@
 import 'dart:typed_data';
 
-import 'package:educonnect/models/course.dart'; // Ensure you have this model
-import 'package:educonnect/services/auth_service.dart'; // Adjust based on your implementation
+import 'package:educonnect/models/course.dart';
+import 'package:educonnect/models/review.dart';
+import 'package:educonnect/services/auth_service.dart';
+import 'package:educonnect/services/review_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -14,8 +16,9 @@ import 'add_course.dart';
 
 class MyProfileScreen extends StatefulWidget {
   static const String id = "myProfileScreen";
+  final String? userId;
 
-  const MyProfileScreen({super.key});
+  const MyProfileScreen({super.key, this.userId});
 
   @override
   State<MyProfileScreen> createState() => _MyProfileScreenState();
@@ -27,7 +30,8 @@ class _MyProfileScreenState extends State<MyProfileScreen>
   Uint8List? _image;
 
   Future<MyUser> getUserData() async {
-    return await AuthService().getCurrentUser();
+    return await AuthService()
+        .getUserById(widget.userId ?? AuthService().currentUser!.uid);
   }
 
   @override
@@ -64,15 +68,16 @@ class _MyProfileScreenState extends State<MyProfileScreen>
         title: const Text('Мој профил'),
       ),
       body: FutureBuilder<MyUser>(
-        future: getUserData(), // the Future function
+        future: getUserData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
-            // Data is loaded, access it using snapshot.data
             MyUser currentUser = snapshot.data!;
+            bool isTutor = currentUser.role == 'tutor';
+            bool isUserIdPresent = widget.userId != null;
             return Column(
               children: <Widget>[
                 const SizedBox(height: 20),
@@ -84,10 +89,11 @@ class _MyProfileScreenState extends State<MyProfileScreen>
                           backgroundImage: MemoryImage(_image!),
                         )
                       : currentUser.imageUrl != "No image"
-                      ? CircleAvatar(
+                          ? CircleAvatar(
                               radius: 50.0,
                               backgroundColor: Colors.white,
-                              backgroundImage: NetworkImage(currentUser.imageUrl),
+                              backgroundImage:
+                                  NetworkImage(currentUser.imageUrl),
                             )
                           : const CircleAvatar(
                               radius: 50.0,
@@ -97,29 +103,47 @@ class _MyProfileScreenState extends State<MyProfileScreen>
                                 color: green,
                                 size: 90.0,
                               )),
-                  Positioned(
-                    bottom: -10,
-                    left: 65,
-                    child: IconButton(
-                        icon: const Icon(Icons.add_a_photo),
-                        onPressed: selectImage),
-                  ),
+                  if (!isUserIdPresent) ...[
+                    Positioned(
+                      bottom: -10,
+                      left: 65,
+                      child: IconButton(
+                          icon: const Icon(Icons.add_a_photo),
+                          onPressed: selectImage),
+                    ),
+                  ],
                 ]),
                 const SizedBox(height: 10),
                 Text(currentUser.username,
                     style: const TextStyle(fontSize: 20)),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _socialMediaButton(Icons.facebook),
-                    _socialMediaButton(Icons.email),
-                  ],
-                ),
+                if (isTutor) ...[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _socialMediaButton(Icons.facebook),
+                      _socialMediaButton(Icons.email),
+                    ],
+                  ),
+                ] else ...[
+                  const SizedBox(height: 20),
+                ],
                 TabBar(
                   controller: _tabController,
-                  tabs: const [
-                    Tab(text: 'Basic Info'),
-                    Tab(text: "My Courses"),
+                  tabs: [
+                    const Tab(text: 'Basic Info'),
+                    if (isTutor) ...[
+                      if (!isUserIdPresent) ...[
+                        const Tab(text: 'My Courses')
+                      ] else ...[
+                        const Tab(text: 'Tutor Courses')
+                      ],
+                    ] else ...[
+                      if (!isUserIdPresent) ...[
+                        const Tab(text: 'My Reviews')
+                      ] else ...[
+                        const Tab(text: 'Student Reviews')
+                      ],
+                    ],
                   ],
                 ),
                 Expanded(
@@ -127,7 +151,10 @@ class _MyProfileScreenState extends State<MyProfileScreen>
                     controller: _tabController,
                     children: [
                       _buildBasicInfoTab(currentUser),
-                      _buildMyCoursesTab(currentUser),
+                      if (isTutor) ...[
+                        _buildMyCoursesTab(currentUser, isUserIdPresent),
+                      ] else
+                        _buildMyReviewsTab(currentUser, isUserIdPresent),
                     ],
                   ),
                 ),
@@ -147,31 +174,75 @@ class _MyProfileScreenState extends State<MyProfileScreen>
         children: <Widget>[
           ListTile(
             title: const Text('First Name'),
-            subtitle: Text(currentUser.firstName), // Replace with actual data
+            subtitle: Text(currentUser.firstName),
           ),
           ListTile(
             title: const Text('Last Name'),
-            subtitle: Text(currentUser.lastName), // Replace with actual data
+            subtitle: Text(currentUser.lastName),
           ),
           ListTile(
             title: const Text('Email'),
-            subtitle: Text(currentUser.username), // Replace with actual data
+            subtitle: Text(currentUser.username),
           ),
           ListTile(
             title: const Text('Phone Number'),
-            subtitle: Text(currentUser.phoneNumber), // Replace with actual data
+            subtitle: Text(currentUser.phoneNumber),
           ),
-          // Add more fields as needed
         ],
       ),
     );
   }
 
-  Widget _buildMyCoursesTab(MyUser currentUser) {
-    // Assuming you have a method in your CourseService to fetch user courses
+  Widget _buildMyReviewsTab(MyUser currentUser, bool isUserIdPresent) {
+    return FutureBuilder<List<Review>>(
+        future: ReviewService().getReviewsForUser(currentUser.id),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No reviews found'));
+          }
+          List<Review> reviews = snapshot.data!;
+          return Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  itemCount: reviews.length,
+                  itemBuilder: (context, index) {
+                    Review review = reviews[index];
+                    return ListTile(
+                      title: StreamBuilder<Course>(
+                        stream:
+                            CourseService().getCourseStream(review.courseId),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else if (snapshot.hasData) {
+                            Course course = snapshot.data!;
+                            return Text(course.name);
+                          } else {
+                            return const Text('No course found');
+                          }
+                        },
+                      ),
+                      subtitle: Text(review.comment),
+                      trailing: Text(review.rating.toString()),
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
+        });
+  }
+
+  Widget _buildMyCoursesTab(MyUser currentUser, bool isUserIdPresent) {
     return FutureBuilder<List<Course>>(
-      future: CourseService().getUserCoursesStream(
-          AuthService().currentUser!.uid), // Adjust fetching logic as needed
+      future: CourseService().getUserCoursesStream(currentUser.id),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -182,15 +253,17 @@ class _MyProfileScreenState extends State<MyProfileScreen>
         List<Course> courses = snapshot.data!;
         return Column(
           children: [
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const AddCourseScreen()),
-                  );
-                },
-                child: const Text('Add Course')),
+            if (!isUserIdPresent) ...[
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const AddCourseScreen()),
+                    );
+                  },
+                  child: const Text('Add Course')),
+            ],
             const SizedBox(height: 20),
             Expanded(
               child: ListView.builder(

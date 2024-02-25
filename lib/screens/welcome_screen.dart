@@ -27,7 +27,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   const SizedBox(height: 80),
                   logogreen,
                   const SizedBox(height: 50),
-                  const Text("Продолжи како...",
+                  const Text("Регистрирај се како...",
                       style: TextStyle(fontSize: 26, color: green)),
                   const SizedBox(height: 20),
                   Container(

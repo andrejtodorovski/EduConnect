@@ -18,4 +18,16 @@ class ReviewService {
     reviewData.remove('id');
     await _firestore.collection('reviews').add(reviewData).then((docRef) {});
   }
+
+  Future<List<Review>> getReviewsForUser(String userId) {
+    return _firestore
+        .collection('reviews')
+        .where('userId', isEqualTo: userId)
+        .get()
+        .then((snapshot) {
+      return snapshot.docs
+          .map((doc) => Review.fromJson(doc.id, doc.data()))
+          .toList();
+    });
+  }
 }

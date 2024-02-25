@@ -17,6 +17,15 @@ class AuthService {
       throw Exception('User not found');
     }
   }
+  Future<MyUser> getUserById(String userId) async {
+    var userDocSnapshot = await _firestore.collection('users').doc(userId).get();
+    if (userDocSnapshot.exists) {
+      return MyUser.fromJson(userDocSnapshot.data() as Map<String, dynamic>);
+    } else {
+      throw Exception('User not found');
+    }
+  }
+
 
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 

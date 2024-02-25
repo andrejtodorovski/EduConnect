@@ -22,8 +22,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Messages')),
-      body: SingleChildScrollView(
-        child: Row(
+      body: Row(
           children: [
             Expanded(
               child: StreamBuilder<List<Chat>>(
@@ -101,7 +100,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
             ),
           ],
         ),
-      ),
     );
   }
 }

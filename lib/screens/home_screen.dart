@@ -6,7 +6,6 @@ import 'package:educonnect/screens/courses_screen.dart';
 import 'package:educonnect/screens/login_screen.dart';
 import 'package:educonnect/screens/messages_screen.dart';
 import 'package:educonnect/screens/my_profile_screen.dart';
-import 'package:educonnect/screens/saved_courses_screen.dart';
 import 'package:educonnect/services/course_service.dart';
 import 'package:educonnect/services/tutors_service.dart';
 import 'package:educonnect/widgets/circle_with_text_below.dart';
@@ -111,7 +110,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 levelOfEducation: "Основно",
                               )));
                 },
-                child: circleWithTextBelowWidget("Основно", showPersonIcon: false),
+                child:
+                    circleWithTextBelowWidget("Основно", showPersonIcon: false),
               ),
               GestureDetector(
                 onTap: () {
@@ -122,7 +122,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 levelOfEducation: "Средно",
                               )));
                 },
-                child: circleWithTextBelowWidget("Средно", showPersonIcon: false),
+                child:
+                    circleWithTextBelowWidget("Средно", showPersonIcon: false),
               ),
               GestureDetector(
                 onTap: () {
@@ -133,7 +134,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 levelOfEducation: "Високо",
                               )));
                 },
-                child: circleWithTextBelowWidget("Високо", showPersonIcon: false),
+                child:
+                    circleWithTextBelowWidget("Високо", showPersonIcon: false),
               ),
               GestureDetector(
                 onTap: () {
@@ -144,7 +146,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 levelOfEducation: "Друго",
                               )));
                 },
-                child: circleWithTextBelowWidget("Друго", showPersonIcon: false),
+                child:
+                    circleWithTextBelowWidget("Друго", showPersonIcon: false),
               )
             ],
           ),
@@ -193,7 +196,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: users
                         .map((user) => GestureDetector(
-                              onTap: () {},
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        MyProfileScreen(userId: user.id),
+                                  ),
+                                );
+                              },
                               child: circleWithTextBelowWidget(user.firstName,
                                   showPersonIcon: true),
                             ))
@@ -222,17 +233,20 @@ class _HomeScreenState extends State<HomeScreen> {
                           MaterialPageRoute(
                               builder: (context) => const CoursesScreen()));
                     },
-                    icon: const Icon(Icons.book)),
-                if(isSignedIn) ...[
-                IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const SavedCoursesScreen()));
-                    },
-                    icon: const Icon(Icons.favorite))],
+                    icon: const Icon(Icons.book, color: green)),
+                if (isSignedIn) ...[
+                  IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                const CoursesScreen(
+                                  getOnlyUserSavedCourses: true,
+                                )));
+                      },
+                      icon: const Icon(Icons.bookmark, color: green))
+                ],
                 IconButton(
                     onPressed: () {
                       Navigator.push(
@@ -240,7 +254,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           MaterialPageRoute(
                               builder: (context) => const MessagesScreen()));
                     },
-                    icon: const Icon(Icons.message)),
+                    icon: const Icon(Icons.message, color: green)),
                 IconButton(
                     onPressed: () {
                       Navigator.push(
@@ -248,16 +262,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           MaterialPageRoute(
                               builder: (context) => const MyProfileScreen()));
                     },
-                    icon: const Icon(Icons.person)),
-                ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const AddCourseScreen()));
-                    },
-                    child: const Text("Add")),
-                ElevatedButton(
+                    icon: const Icon(Icons.person, color: green)),
+                IconButton(
                     onPressed: () {
                       _authService.signOut();
                       Navigator.pushReplacement(
@@ -266,7 +272,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             builder: (context) => const HomeScreen()),
                       );
                     },
-                    child: const Text("Logout"))
+                    icon: const Icon(Icons.logout, color: green)),
               ] else ...[
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: green),

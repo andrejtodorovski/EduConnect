@@ -5,6 +5,31 @@ import 'package:educonnect/models/user_favorite_courses.dart';
 class CourseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  Stream<List<Course>> getUsersFavoriteCourses(String userId) {
+    final coursesCollection = FirebaseFirestore.instance.collection('courses');
+    final userFavoritesCollection =
+        FirebaseFirestore.instance.collection('user_favorite_courses');
+
+    Stream<List<String>> favoriteCourseIdsStream = userFavoritesCollection
+        .where('userId', isEqualTo: userId)
+        .snapshots()
+        .map((snapshot) =>
+            snapshot.docs.map((doc) => doc['courseId'] as String).toList());
+
+    return favoriteCourseIdsStream.asyncMap((courseIds) async {
+      List<Course> courses = [];
+      for (String courseId in courseIds) {
+        var courseDocument = await coursesCollection.doc(courseId).get();
+        var courseData = courseDocument.data();
+        if (courseData != null) {
+          Course course = Course.fromJson(courseDocument.id, courseData);
+          courses.add(course);
+        }
+      }
+      return courses;
+    });
+  }
+
   Stream<List<Course>> getCoursesStream(
       String? keyword, String? levelOfEducation) {
     var query = _firestore.collection('courses').snapshots();
@@ -27,6 +52,16 @@ class CourseService {
         var data = doc.data();
         return Course.fromJson(doc.id, data);
       }).toList();
+    });
+  }
+
+  Stream<Course> getCourseStream(String courseId) {
+    return _firestore
+        .collection('courses')
+        .doc(courseId)
+        .snapshots()
+        .map((snapshot) {
+      return Course.fromJson(snapshot.id, snapshot.data()!);
     });
   }
 
