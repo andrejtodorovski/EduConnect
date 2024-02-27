@@ -1,4 +1,5 @@
 import 'package:educonnect/services/review_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../models/course.dart';
@@ -20,6 +21,7 @@ class _CourseInfoWidgetState extends State<CourseInfoWidget> {
   final ReviewService _reviewService = ReviewService();
   final TextEditingController _ratingController = TextEditingController();
   final TextEditingController _commentController = TextEditingController();
+  var isSignedIn = FirebaseAuth.instance.currentUser != null;
 
   void _saveReview() async {
     final String rating = _ratingController.text;
@@ -108,58 +110,61 @@ class _CourseInfoWidgetState extends State<CourseInfoWidget> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green, // Set the button background color
+                  backgroundColor: Colors.green,
+                  // Set the button background color
                   foregroundColor: Colors.white, // Set the button text color
                 ),
                 child: const Text('Контактирај го туторот'),
               ),
-          ElevatedButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('Оцени го курсот'),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        TextField(
-                          controller: _ratingController,
-                          decoration: const InputDecoration(
-                            labelText: 'Оцена',
-                            hintText: '5',
+              if (isSignedIn) ...[
+                ElevatedButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Оцени го курсот'),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              TextField(
+                                controller: _ratingController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Оцена',
+                                  hintText: '5',
+                                ),
+                              ),
+                              TextField(
+                                controller: _commentController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Коментар',
+                                  hintText: 'Одличен курс!',
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        TextField(
-                          controller: _commentController,
-                          decoration: const InputDecoration(
-                            labelText: 'Коментар',
-                            hintText: 'Одличен курс!',
-                          ),
-                        ),
-                      ],
-                    ),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('Откажи'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          _saveReview();
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('Зачувај'),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-            child: const Text('Оцени го курсот'),
-          ),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('Откажи'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                _saveReview();
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('Зачувај'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  child: const Text('Оцени го курсот'),
+                ),
+              ],
             ],
           ),
           StreamBuilder<List<Review>>(

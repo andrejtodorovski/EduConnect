@@ -40,17 +40,9 @@ class _LoginScreenState extends State<LoginScreen> {
       final value = await AuthService().signInWithEmailAndPassword(
           _emailController.text, _passwordController.text);
       if (value != null) {
-        var favoriteCourses =
-            CourseService().getFavoriteCoursesStream(value.user!.uid);
-
         if (!mounted) return;
-
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) => HomeScreen(
-                      favoriteCourses: favoriteCourses,
-                    )));
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()));
       }
     } on FirebaseAuthException catch (e) {
       hasError = true;

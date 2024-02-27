@@ -1,7 +1,6 @@
 import 'package:educonnect/helpers/colors.dart';
 import 'package:educonnect/helpers/images.dart';
 import 'package:educonnect/models/course.dart';
-import 'package:educonnect/screens/add_course.dart';
 import 'package:educonnect/screens/courses_screen.dart';
 import 'package:educonnect/screens/login_screen.dart';
 import 'package:educonnect/screens/messages_screen.dart';
@@ -19,15 +18,12 @@ import '../widgets/course_info.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String id = "homePage";
-  final Stream<List<String>>? favoriteCourses;
 
-  const HomeScreen({this.favoriteCourses, Key? key}) : super(key: key);
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
-
-// TODO() - check favorites everywhere and reviews everywhere
 
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _keywordController = TextEditingController();
@@ -39,10 +35,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    widget.favoriteCourses?.listen((event) {
-      favoriteCoursesIds.clear();
-      favoriteCoursesIds.addAll(event);
-    });
   }
 
   void searchCourses() async {
@@ -71,7 +63,6 @@ class _HomeScreenState extends State<HomeScreen> {
         icon: const Icon(Icons.search, color: Colors.white));
   }
 
-  // TODO() - use SingleChildScrollView
   @override
   Widget build(BuildContext context) {
     var isSignedIn = FirebaseAuth.instance.currentUser != null;
@@ -85,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               child: Column(
                 children: [
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 20),
                   logo,
                   entryFieldWidget(
                     'Пребарувај...',
@@ -94,10 +85,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   _searchIcon()
                 ],
               )),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           const Text("Образование",
               style: TextStyle(fontSize: 20, color: green)),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -151,10 +142,10 @@ class _HomeScreenState extends State<HomeScreen> {
               )
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           const Text("Популарни часови",
               style: TextStyle(fontSize: 20, color: green)),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           StreamBuilder<List<Course>>(
             stream: _courseService.getTopRatedCoursesStream(),
             builder: (context, snapshot) {
@@ -170,8 +161,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: GestureDetector(
                             onTap: () =>
                                 _showCourseInfo(context, courses[index]),
-                            child: rectangleCourse(courses[index], true,
-                                favoriteCoursesIds.contains(courses[index].id)),
+                            child: RectangleCourse(
+                                course: courses[index]),
                           ),
                         );
                       }),
@@ -183,7 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
               }
             },
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 20),
           const Text("Најдобри тутори",
               style: TextStyle(fontSize: 20, color: green)),
           const SizedBox(height: 20),
@@ -211,12 +202,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         .toList(),
                   );
                 } else if (snapshot.hasError) {
-                  return const Text('Something went wrong');
+                  return const Text('Се случи грешка');
                 } else {
                   return const CircularProgressIndicator();
                 }
               }),
-          const SizedBox(height: 60)
+          const SizedBox(height: 20)
         ],
       )),
       bottomNavigationBar: BottomAppBar(
@@ -240,10 +231,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                const CoursesScreen(
-                                  getOnlyUserSavedCourses: true,
-                                )));
+                                builder: (context) => const CoursesScreen(
+                                      getOnlyUserSavedCourses: true,
+                                    )));
                       },
                       icon: const Icon(Icons.bookmark, color: green))
                 ],

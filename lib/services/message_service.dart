@@ -10,12 +10,29 @@ class MessageService {
     return _firestore
         .collection('messages')
         .where('chatId', isEqualTo: chatId)
-        .orderBy('timestamp', descending: true)
+        .orderBy('timestamp', descending: false)
         .snapshots()
         .map((snapshot) {
       return snapshot.docs
           .map((doc) => Message.fromJson(doc.id, doc.data()))
           .toList();
+    });
+  }
+
+  void createChatAndSendHelloMessage(String tutorId, String studentId, String tutorName, String studentName) {
+    final chat = Chat(id: '', tutorId: tutorId, tutorName: tutorName, studentId: studentId, studentName: studentName);
+    Map<String, dynamic> chatData = chat.toJson();
+    chatData.remove('id');
+    _firestore.collection('chats').add(chatData).then((docRef) {
+      final message = Message(
+        id: '',
+        chatId: docRef.id,
+        message: 'Hello!',
+        senderId: studentId,
+        receiverId: tutorId,
+        timestamp: Timestamp.now(),
+      );
+      sendMessage(message);
     });
   }
 
@@ -42,8 +59,6 @@ class MessageService {
           .toList();
     });
   }
-
-
 
   Future<void> sendMessage(Message message) async {
     Map<String, dynamic> messageData = message.toJson();

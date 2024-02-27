@@ -24,9 +24,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               color: grey,
               child: Column(
                 children: [
-                  const SizedBox(height: 80),
+                  const SizedBox(height: 40),
                   logogreen,
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 25),
                   const Text("Регистрирај се како...",
                       style: TextStyle(fontSize: 26, color: green)),
                   const SizedBox(height: 20),
@@ -56,7 +56,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               style: TextStyle(fontSize: 26)),
                         ],
                       )),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 20),
                   loginLinkWidget(context),
                   TextButton(
                       onPressed: () {

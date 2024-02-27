@@ -89,7 +89,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: ListTile(
             title: const Text('Тутор', style: TextStyle(fontSize: 16, color: green)),
             leading: Radio<String>(
-              value: 'Тутор',
+              value: 'tutor',
               groupValue: _role,
               onChanged: (String? value) {
                 setState(() {
@@ -103,7 +103,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: ListTile(
             title: const Text('Студент', style: TextStyle(fontSize: 16, color: green)),
             leading: Radio<String>(
-              value: 'Студент',
+              value: 'student',
               groupValue: _role,
               onChanged: (String? value) {
                 setState(() {

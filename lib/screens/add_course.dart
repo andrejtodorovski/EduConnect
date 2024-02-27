@@ -244,7 +244,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(height: 80),
+              const SizedBox(height: 10),
               logogreen,
               entryFieldWidget('Име на предмет', _nameController),
               _levelOfEducationRadioButtons(),
@@ -285,8 +285,8 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                   ),
                 ],
               ),
-              errorMessageWidget(errorMessage),
               _submitButton(),
+              errorMessageWidget(errorMessage),
             ],
           ),
         ),

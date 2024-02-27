@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:educonnect/models/course.dart';
 import 'package:educonnect/models/review.dart';
 import 'package:educonnect/services/auth_service.dart';
+import 'package:educonnect/services/message_service.dart';
 import 'package:educonnect/services/review_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -13,6 +14,7 @@ import '../services/course_service.dart';
 import '../services/image_service.dart';
 import '../widgets/my_courses_view.dart';
 import 'add_course.dart';
+import 'messages_screen.dart';
 
 class MyProfileScreen extends StatefulWidget {
   static const String id = "myProfileScreen";
@@ -32,6 +34,10 @@ class _MyProfileScreenState extends State<MyProfileScreen>
   Future<MyUser> getUserData() async {
     return await AuthService()
         .getUserById(widget.userId ?? AuthService().currentUser!.uid);
+  }
+
+  Future<MyUser> getCurrentUserData() async {
+    return await AuthService().getCurrentUser();
   }
 
   @override
@@ -65,7 +71,7 @@ class _MyProfileScreenState extends State<MyProfileScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Мој профил'),
+        title: const Text('Информации за профилот'),
       ),
       body: FutureBuilder<MyUser>(
         future: getUserData(),
@@ -150,7 +156,7 @@ class _MyProfileScreenState extends State<MyProfileScreen>
                   child: TabBarView(
                     controller: _tabController,
                     children: [
-                      _buildBasicInfoTab(currentUser),
+                      _buildBasicInfoTab(currentUser, isUserIdPresent),
                       if (isTutor) ...[
                         _buildMyCoursesTab(currentUser, isUserIdPresent),
                       ] else
@@ -168,28 +174,56 @@ class _MyProfileScreenState extends State<MyProfileScreen>
     );
   }
 
-  Widget _buildBasicInfoTab(MyUser currentUser) {
+  Widget _buildBasicInfoTab(MyUser currentUser, bool isUserIdPresent) {
     return Center(
-      child: ListView(
-        children: <Widget>[
-          ListTile(
-            title: const Text('First Name'),
-            subtitle: Text(currentUser.firstName),
-          ),
-          ListTile(
-            title: const Text('Last Name'),
-            subtitle: Text(currentUser.lastName),
-          ),
-          ListTile(
-            title: const Text('Email'),
-            subtitle: Text(currentUser.username),
-          ),
-          ListTile(
-            title: const Text('Phone Number'),
-            subtitle: Text(currentUser.phoneNumber),
+      child: ListView(children: <Widget>[
+        ListTile(
+          title: const Text('First Name'),
+          subtitle: Text(currentUser.firstName),
+        ),
+        ListTile(
+          title: const Text('Last Name'),
+          subtitle: Text(currentUser.lastName),
+        ),
+        ListTile(
+          title: const Text('Email'),
+          subtitle: Text(currentUser.username),
+        ),
+        ListTile(
+          title: const Text('Phone Number'),
+          subtitle: Text(currentUser.phoneNumber),
+        ),
+        if (isUserIdPresent) ...[
+          FutureBuilder<MyUser>(
+            future: getCurrentUserData(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else if (snapshot.hasData) {
+                if (snapshot.data!.role == 'student') {
+                  return ElevatedButton(
+                    onPressed: () {
+                      MessageService().createChatAndSendHelloMessage(
+                          currentUser.id, snapshot.data!.id, "${currentUser.firstName} ${currentUser.lastName}", "${snapshot.data!.firstName} ${snapshot.data!.lastName}");
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const MessagesScreen()));
+                    },
+                    child: const Text('Contact'),
+                  );
+                } else {
+                  return const Text('');
+                }
+              } else {
+                return const Center(child: CircularProgressIndicator());
+              }
+            },
           ),
         ],
-      ),
+      ]),
     );
   }
 
@@ -201,7 +235,7 @@ class _MyProfileScreenState extends State<MyProfileScreen>
             return const Center(child: CircularProgressIndicator());
           }
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No reviews found'));
+            return const Center(child: Text('Нема рецензии'));
           }
           List<Review> reviews = snapshot.data!;
           return Column(
@@ -225,7 +259,7 @@ class _MyProfileScreenState extends State<MyProfileScreen>
                             Course course = snapshot.data!;
                             return Text(course.name);
                           } else {
-                            return const Text('No course found');
+                            return const Text('Нема курсеви');
                           }
                         },
                       ),
@@ -248,7 +282,7 @@ class _MyProfileScreenState extends State<MyProfileScreen>
           return const Center(child: CircularProgressIndicator());
         }
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('No courses found'));
+          return const Center(child: Text('Нема курсеви'));
         }
         List<Course> courses = snapshot.data!;
         return Column(

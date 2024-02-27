@@ -1,105 +1,121 @@
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:educonnect/models/chat.dart';
 import 'package:educonnect/models/message.dart';
-import 'package:educonnect/services/auth_service.dart';
 import 'package:educonnect/services/message_service.dart';
-import 'package:flutter/material.dart';
 
 class MessagesScreen extends StatefulWidget {
   static const String id = "messagesScreen";
+  final Chat chat;
+  final String currentUserId;
 
-  const MessagesScreen({Key? key}) : super(key: key);
+  const MessagesScreen({
+    Key? key,
+    required this.chat,
+    required this.currentUserId,
+  }) : super(key: key);
 
   @override
   State<MessagesScreen> createState() => _MessagesScreenState();
 }
 
 class _MessagesScreenState extends State<MessagesScreen> {
-  Chat? selectedChat;
   final MessageService _messageService = MessageService();
-  String currentUserId = AuthService().currentUser!.uid;
+  final TextEditingController _messageController = TextEditingController();
+
+  @override
+  void dispose() {
+    _messageController.dispose();
+    super.dispose();
+  }
+
+  Future<void> sendMessage() async {
+    if (_messageController.text.isNotEmpty) {
+      final message = Message(
+        id: '',
+        chatId: widget.chat.id,
+        message: _messageController.text,
+        senderId: widget.currentUserId,
+        receiverId: widget.chat.tutorId == widget.currentUserId
+            ? widget.chat.studentId
+            : widget.chat.tutorId,
+        timestamp: Timestamp.now(),
+      );
+      await _messageService.sendMessage(message);
+      _messageController.clear();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Messages')),
-      body: Row(
-          children: [
-            Expanded(
-              child: StreamBuilder<List<Chat>>(
-                stream: _messageService.getTutorsChatsStream(currentUserId),
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  }
-                  if (!snapshot.hasData) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  final chats = snapshot.data!;
-                  return ListView.builder(
-                    itemCount: chats.length,
-                    itemBuilder: (context, index) {
-                      final chat = chats[index];
-                      return ListTile(
-                        title: Text(
-                            'Chat with ${chat.tutorId == currentUserId ? chat.studentName : chat.tutorName}'),
-                        onTap: () {
-                          setState(() {
-                            selectedChat = chat;
-                          });
-                        },
-                      );
-                    },
-                  );
-                },
-              ),
+      appBar: AppBar(title: Text('Messages with ${widget.chat.tutorId == widget.currentUserId ? widget.chat.studentName : widget.chat.tutorName}')),
+      body: Column(
+        children: [
+          Expanded(
+            child: StreamBuilder<List<Message>>(
+              stream: _messageService.getMessagesStream(widget.chat.id),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                }
+                if (!snapshot.hasData) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                final messages = snapshot.data!;
+                return ListView.builder(
+                  itemCount: messages.length,
+                  itemBuilder: (context, index) {
+                    final message = messages[index];
+                    return ListTile(
+                      title: Container(
+                        alignment: message.senderId == widget.currentUserId
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
+                        color: message.senderId == widget.currentUserId
+                            ? Colors.blue[100]
+                            : Colors.grey[300],
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            message.message,
+                            textAlign: message.senderId == widget.currentUserId
+                                ? TextAlign.right
+                                : TextAlign.left,
+                          ),
+                        ),
+                      ),
+                      subtitle: Text(
+                          'Sent by ${message.senderId == widget.chat.tutorId ? widget.chat.tutorName : widget.chat.studentName}'),
+                    );
+                  },
+                );
+              },
             ),
-            Expanded(
-              flex: 2,
-              child: selectedChat == null
-                  ? const Center(child: Text('Select a chat to view messages'))
-                  : StreamBuilder<List<Message>>(
-                      stream: _messageService.getMessagesStream(selectedChat!.id),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasError) {
-                          return Text('Error: ${snapshot.error}');
-                        }
-                        if (!snapshot.hasData) {
-                          return const Center(child: CircularProgressIndicator());
-                        }
-                        final messages = snapshot.data!;
-                        return ListView.builder(
-                          itemCount: messages.length,
-                          itemBuilder: (context, index) {
-                            final message = messages[index];
-                            return ListTile(
-                              title: Container(
-                                alignment: message.senderId == currentUserId
-                                    ? Alignment.centerRight
-                                    : Alignment.centerLeft,
-                                color: message.senderId == currentUserId
-                                    ? Colors.blue[100]
-                                    : Colors.grey[300],
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    message.message,
-                                    textAlign: message.senderId == currentUserId
-                                        ? TextAlign.right
-                                        : TextAlign.left,
-                                  ),
-                                ),
-                              ),
-                              subtitle: Text(
-                                  'Sent by ${message.senderId == selectedChat!.tutorId ? selectedChat!.tutorName : selectedChat!.studentName}'),
-                            );
-                            // TODO() Add a text field and a button to send a message and improve styling
-                          },
-                        );
-                      },
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            color: Colors.white,
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _messageController,
+                    decoration: const InputDecoration(
+                      hintText: "Type your message here..",
+                      border: InputBorder.none,
                     ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.send),
+                  onPressed: sendMessage,
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
     );
   }
 }
