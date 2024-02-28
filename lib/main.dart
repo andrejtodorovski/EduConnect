@@ -1,7 +1,9 @@
 import 'package:educonnect/helpers/colors.dart';
 import 'package:educonnect/helpers/firebase_options.dart';
 import 'package:educonnect/screens/add_course.dart';
+import 'package:educonnect/screens/chats_screen.dart';
 import 'package:educonnect/screens/courses_screen.dart';
+import 'package:educonnect/screens/google_maps_screen.dart';
 import 'package:educonnect/screens/home_screen.dart';
 import 'package:educonnect/screens/login_screen.dart';
 import 'package:educonnect/screens/messages_screen.dart';
@@ -41,7 +43,9 @@ class MyApp extends StatelessWidget {
           AddCourseScreen.id: (context) => const AddCourseScreen(),
           CoursesScreen.id: (context) => const CoursesScreen(),
           MessagesScreen.id: (context) => const MessagesScreen(),
+          ChatsScreen.id: (context) => const ChatsScreen(),
           MyProfileScreen.id: (context) => const MyProfileScreen(),
+          GoogleMapsScreen.id: (context) => const GoogleMapsScreen(),
         });
   }
 }

@@ -39,7 +39,7 @@ class TutorsService {
     for (var doc in querySnapshot.docs) {
       var data = doc.data() as Map<String, dynamic>;
       String userId = data['userId'];
-      double rating = data['averageRating'];
+      double rating = data['averageRating'] / 1.0;
 
       if (!userRatings.containsKey(userId)) {
         userRatings[userId] = [rating, 1];

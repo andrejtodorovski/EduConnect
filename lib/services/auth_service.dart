@@ -17,6 +17,20 @@ class AuthService {
       throw Exception('User not found');
     }
   }
+
+  Future<MyUser?> getCurrentUserNullable() async {
+    if (currentUser != null) {
+      var userDocSnapshot = await _firestore.collection('users').doc(
+          currentUser!.uid).get();
+      if (userDocSnapshot.exists) {
+        return MyUser.fromJson(userDocSnapshot.data() as Map<String, dynamic>);
+      } else {
+        throw Exception('Test1: User not found');
+      }
+    } else {
+      return Future.value(null);
+    }
+  }
   Future<MyUser> getUserById(String userId) async {
     var userDocSnapshot = await _firestore.collection('users').doc(userId).get();
     if (userDocSnapshot.exists) {

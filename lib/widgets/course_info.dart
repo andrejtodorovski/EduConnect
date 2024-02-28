@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../models/course.dart';
 import '../models/review.dart';
 import '../models/user.dart';
+import '../screens/google_maps_screen.dart';
 import '../screens/my_profile_screen.dart';
 import '../services/auth_service.dart';
 
@@ -47,17 +48,14 @@ class _CourseInfoWidgetState extends State<CourseInfoWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white, // Set the background color of the modal
-      padding: const EdgeInsets.all(16.0), // Add some padding inside the modal
+      color: Colors.white,
+      padding: const EdgeInsets.all(16.0),
       child: Column(
         mainAxisSize: MainAxisSize.max,
-        // Set the content to be as big as needed
         children: <Widget>[
           Text(
             widget.course.name,
-            style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold), // Set the text style
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 5),
           Row(
@@ -65,15 +63,13 @@ class _CourseInfoWidgetState extends State<CourseInfoWidget> {
             children: [
               Text(
                 widget.course.tutorName,
-                style: const TextStyle(fontSize: 18), // Adjust the text style
+                style: const TextStyle(fontSize: 18),
               ),
               Row(
                 children: [
                   Icon(Icons.star, color: Colors.yellow[600]),
-                  // Set the star color
                   Text(widget.course.averageRating.toString(),
                       style: const TextStyle(fontSize: 18)),
-                  // Set the rating text style
                 ],
               ),
             ],
@@ -111,10 +107,9 @@ class _CourseInfoWidgetState extends State<CourseInfoWidget> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
-                  // Set the button background color
-                  foregroundColor: Colors.white, // Set the button text color
+                  foregroundColor: Colors.white,
                 ),
-                child: const Text('Контактирај го туторот'),
+                child: const Text('Контактирај'),
               ),
               if (isSignedIn) ...[
                 ElevatedButton(
@@ -130,7 +125,7 @@ class _CourseInfoWidgetState extends State<CourseInfoWidget> {
                               TextField(
                                 controller: _ratingController,
                                 decoration: const InputDecoration(
-                                  labelText: 'Оцена',
+                                  labelText: 'Оцени го курсот',
                                   hintText: '5',
                                 ),
                               ),
@@ -165,6 +160,22 @@ class _CourseInfoWidgetState extends State<CourseInfoWidget> {
                   child: const Text('Оцени го курсот'),
                 ),
               ],
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          GoogleMapsScreen(course: widget.course),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Мапа'),
+              ),
             ],
           ),
           StreamBuilder<List<Review>>(
@@ -241,7 +252,6 @@ class _CourseInfoWidgetState extends State<CourseInfoWidget> {
                   }),
                 ),
                 const SizedBox(height: 8),
-                // Add more review details here
               ],
             ),
           ),

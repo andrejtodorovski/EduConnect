@@ -59,7 +59,7 @@ class Course {
       location: json['location'] as GeoPoint,
       price: json['price'],
       length: json['length'],
-      averageRating: json['averageRating'] as double
+      averageRating: json['averageRating'] / 1.0,
     );
   }
 }

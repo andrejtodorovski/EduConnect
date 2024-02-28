@@ -9,7 +9,6 @@ Widget myCoursesView(Course course) {
       leading: Container(
         width: 50.0,
         color: Colors.grey[300],
-        // Placeholder for image, replace with Image.network or Image.asset as necessary
       ),
       title: Text(
         course.name,

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:educonnect/helpers/colors.dart';
 import 'package:educonnect/services/auth_service.dart';
 import 'package:educonnect/services/course_service.dart';
@@ -17,49 +15,31 @@ class RectangleCourse extends StatefulWidget {
 }
 
 class _RectangleCourseState extends State<RectangleCourse> {
-  late bool isUserFavoriteCourse;
-  StreamSubscription?
-      favoriteCoursesSubscription;
   late bool showFavoritesButton;
 
   @override
   void initState() {
     super.initState();
-    isUserFavoriteCourse = false;
     showFavoritesButton = false;
-
 
     var currentUser = AuthService().currentUser;
     if (currentUser != null) {
       showFavoritesButton = true;
-
-      var favoriteCoursesStream =
-          CourseService().getFavoriteCoursesStream(currentUser.uid);
-
-      favoriteCoursesSubscription = favoriteCoursesStream.listen((courses) {
-        setState(() {
-          isUserFavoriteCourse =
-              courses.any((course) => course == widget.course.id);
-        });
-      });
     }
   }
 
   @override
   void dispose() {
-    favoriteCoursesSubscription?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return rectangleCourse(
-        widget.course, showFavoritesButton, isUserFavoriteCourse);
+    return rectangleCourse(widget.course, showFavoritesButton);
   }
 }
 
-Widget rectangleCourse(
-    Course course, bool showFavoritesButton, bool isUserFavoriteCourse) {
+Widget rectangleCourse(Course course, bool showFavoritesButton) {
   return Container(
     padding: const EdgeInsets.all(8),
     width: 200,
@@ -112,10 +92,27 @@ Widget rectangleCourse(
           ),
         ),
         if (showFavoritesButton) ...[
-          FavoriteCourseIconButton(
-            courseId: course.id,
-            initialState: isUserFavoriteCourse,
-          ),
+          StreamBuilder<List<String>>(
+              stream: CourseService()
+                  .getFavoriteCoursesStream(AuthService().currentUser!.uid),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                }
+                if (snapshot.hasError) {
+                  return const Icon(Icons.error);
+                }
+                if (snapshot.hasData) {
+                  bool isUserFavoriteCourse =
+                      snapshot.data!.any((fav) => fav == course.id);
+                  return FavoriteCourseIconButton(
+                    courseId: course.id,
+                    initialState: isUserFavoriteCourse,
+                  );
+                } else {
+                  return const SizedBox();
+                }
+              })
         ],
       ],
     ),
@@ -154,8 +151,7 @@ class _FavoriteCourseIconButtonState extends State<FavoriteCourseIconButton> {
       icon: Icon(iconData),
       onPressed: () async {
         await CourseService().createUserFavoriteCourse(
-            widget.courseId,
-            AuthService().currentUser!.uid);
+            widget.courseId, AuthService().currentUser!.uid);
 
         setState(() {
           isFavorite = !isFavorite;

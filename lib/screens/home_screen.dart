@@ -1,9 +1,9 @@
 import 'package:educonnect/helpers/colors.dart';
 import 'package:educonnect/helpers/images.dart';
 import 'package:educonnect/models/course.dart';
+import 'package:educonnect/screens/chats_screen.dart';
 import 'package:educonnect/screens/courses_screen.dart';
 import 'package:educonnect/screens/login_screen.dart';
-import 'package:educonnect/screens/messages_screen.dart';
 import 'package:educonnect/screens/my_profile_screen.dart';
 import 'package:educonnect/services/course_service.dart';
 import 'package:educonnect/services/tutors_service.dart';
@@ -168,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       }),
                 );
               } else if (snapshot.hasError) {
-                return const Text('Something went wrong');
+                return const Text('Се случи грешка');
               } else {
                 return const CircularProgressIndicator();
               }
@@ -242,7 +242,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const MessagesScreen()));
+                              builder: (context) => const ChatsScreen()));
                     },
                     icon: const Icon(Icons.message, color: green)),
                 IconButton(

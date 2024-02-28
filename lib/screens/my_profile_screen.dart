@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:educonnect/models/course.dart';
 import 'package:educonnect/models/review.dart';
+import 'package:educonnect/screens/chats_screen.dart';
 import 'package:educonnect/services/auth_service.dart';
 import 'package:educonnect/services/message_service.dart';
 import 'package:educonnect/services/review_service.dart';
@@ -12,9 +13,9 @@ import '../helpers/colors.dart';
 import '../models/user.dart';
 import '../services/course_service.dart';
 import '../services/image_service.dart';
+import '../widgets/login_link.dart';
 import '../widgets/my_courses_view.dart';
 import 'add_course.dart';
-import 'messages_screen.dart';
 
 class MyProfileScreen extends StatefulWidget {
   static const String id = "myProfileScreen";
@@ -36,8 +37,8 @@ class _MyProfileScreenState extends State<MyProfileScreen>
         .getUserById(widget.userId ?? AuthService().currentUser!.uid);
   }
 
-  Future<MyUser> getCurrentUserData() async {
-    return await AuthService().getCurrentUser();
+  Future<MyUser?> getCurrentUserData() async {
+    return await AuthService().getCurrentUserNullable();
   }
 
   @override
@@ -194,7 +195,7 @@ class _MyProfileScreenState extends State<MyProfileScreen>
           subtitle: Text(currentUser.phoneNumber),
         ),
         if (isUserIdPresent) ...[
-          FutureBuilder<MyUser>(
+          FutureBuilder<MyUser?>(
             future: getCurrentUserData(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -202,7 +203,7 @@ class _MyProfileScreenState extends State<MyProfileScreen>
               } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else if (snapshot.hasData) {
-                if (snapshot.data!.role == 'student') {
+                if (snapshot.data != null && snapshot.data!.role == 'student') {
                   return ElevatedButton(
                     onPressed: () {
                       MessageService().createChatAndSendHelloMessage(
@@ -210,15 +211,20 @@ class _MyProfileScreenState extends State<MyProfileScreen>
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const MessagesScreen()));
+                              builder: (context) => const ChatsScreen()));
                     },
-                    child: const Text('Contact'),
+                    child: const Text('Контакт'),
                   );
                 } else {
                   return const Text('');
                 }
               } else {
-                return const Center(child: CircularProgressIndicator());
+                return Column(
+                  children: [
+                    const Center(child: Text('Најави се за да го контактираш туторот')),
+                    loginLinkOnlyWidget(context),
+                  ],
+                );
               }
             },
           ),

@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:educonnect/helpers/colors.dart';
 import 'package:educonnect/models/chat.dart';
 import 'package:educonnect/services/auth_service.dart';
 import 'package:educonnect/services/message_service.dart';
+import 'package:flutter/material.dart';
+
 import '../models/user.dart';
 import 'messages_screen.dart';
 
@@ -11,7 +13,7 @@ class ChatsScreen extends StatefulWidget {
   const ChatsScreen({Key? key}) : super(key: key);
 
   @override
-  _ChatsScreenState createState() => _ChatsScreenState();
+  State<ChatsScreen> createState() => _ChatsScreenState();
 }
 
 class _ChatsScreenState extends State<ChatsScreen> {
@@ -25,7 +27,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Chats')),
+      appBar: AppBar(title: const Text('Пораки')),
       body: FutureBuilder<MyUser>(
         future: getUserData(),
         builder: (context, snapshot) {
@@ -52,20 +54,27 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   itemCount: chats.length,
                   itemBuilder: (context, index) {
                     final chat = chats[index];
-                    return ListTile(
-                      title: Text(
-                          'Chat with ${chat.tutorId == currentUserId ? chat.studentName : chat.tutorName}'),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MessagesScreen(
-                              chat: chat,
-                              currentUserId: currentUserId,
+                    return Card(
+                      color: green,
+                      margin: const EdgeInsets.all(8.0),
+                      child: ListTile(
+                        title: Text(
+                          chat.tutorId == currentUserId ? chat.studentName : chat.tutorName,
+                          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                        ),
+                        subtitle: const Text('Притисни да ги видиш пораките', style: TextStyle(color: Colors.black)),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MessagesScreen(
+                                chat: chat,
+                                currentUserId: currentUserId,
+                              ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     );
                   },
                 );

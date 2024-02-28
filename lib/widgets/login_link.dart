@@ -28,3 +28,26 @@ Widget loginLinkWidget(BuildContext context) {
     ],
   );
 }
+
+
+Widget loginLinkOnlyWidget(BuildContext context) {
+  return Column(
+    children: [
+      TextButton(
+        onPressed: () {
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const LoginScreen()));
+        },
+        child: const Text(
+          'Најавете се тука.',
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: green,
+              decoration: TextDecoration.none),
+        ),
+      ),
+    ],
+  );
+}
